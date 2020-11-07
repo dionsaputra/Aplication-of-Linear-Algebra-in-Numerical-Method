@@ -1,7 +1,7 @@
-data class Matrix(private val value: Array<DoubleArray>) {
+data class Matrix(private var value: Array<DoubleArray>) {
 
-    private val width get() = if (value.isEmpty()) 0 else value[0].size
-    private val height get() = value.size
+    private val rows get() = value.size
+    private val cols get() = if (value.isEmpty()) 0 else value[0].size
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -13,11 +13,28 @@ data class Matrix(private val value: Array<DoubleArray>) {
         return value.contentDeepHashCode()
     }
 
-    fun elementWise(other: Matrix, transform: Double.(Double) -> Double): Matrix {
-        require(width == other.width && height == other.height)
-        val result = Array(height) { DoubleArray(width) }
-        for (i in 0 until height) {
-            for (j in 0 until width) result[i][j] = value[i][j].transform(other.value[i][j])
+    operator fun get(row: Int, col: Int) = value[row][col]
+
+    operator fun plus(other: Matrix) = elementWise(other, Double::plus)
+
+    operator fun minus(other: Matrix) = elementWise(other, Double::minus)
+
+    operator fun times(other: Matrix): Matrix {
+        require(cols == other.rows)
+        val result = Array(rows) { DoubleArray(other.cols) }
+        for (i in 0 until rows) {
+            for (j in 0 until other.cols) {
+                for (k in 0 until cols) result[i][j] += this[i, k] * other[k, j]
+            }
+        }
+        return Matrix(result)
+    }
+
+    private fun elementWise(other: Matrix, transform: Double.(Double) -> Double): Matrix {
+        require(cols == other.cols && rows == other.rows)
+        val result = Array(rows) { DoubleArray(cols) }
+        for (i in 0 until rows) {
+            for (j in 0 until cols) result[i][j] = this[i, j].transform(other[i, j])
         }
         return Matrix(result)
     }
