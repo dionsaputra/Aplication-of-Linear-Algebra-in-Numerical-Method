@@ -48,7 +48,16 @@ internal class MatrixTest {
     }
 
     @Test
-    fun inverse() {
+    fun detTwoTest() {
+        val M = Matrix.of(
+            intArrayOf(4,9),
+            intArrayOf(3,7)
+        )
+        assertEquals(1.0, M.det())
+    }
+
+    @Test
+    fun inverseExistTest() {
         val M = Matrix.of(
             intArrayOf(1, 0, 5),
             intArrayOf(2, 1, 6),
@@ -60,5 +69,27 @@ internal class MatrixTest {
             intArrayOf(5, -4, 1)
         )
         assertEquals(expected, M.inverse())
+    }
+    @Test
+    fun inverseExistTwoTest() {
+        val M = Matrix.of(
+            intArrayOf(4,9),
+            intArrayOf(3, 7)
+        )
+        val expected = Matrix.of(
+            intArrayOf(7, -9),
+            intArrayOf(-3, 4)
+        )
+        assertEquals(expected, M.inverse())
+    }
+
+    @Test
+    fun inverseNotExistTest() {
+        val M = Matrix.of(
+            intArrayOf(1, 0, 5),
+            intArrayOf(2, 1, 6),
+            intArrayOf(4, 2, 12)
+        )
+        assert(M.inverse() == null)
     }
 }

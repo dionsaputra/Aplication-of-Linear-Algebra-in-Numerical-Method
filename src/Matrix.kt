@@ -42,6 +42,8 @@ data class Matrix(private var value: Array<DoubleArray>) {
     fun det(): Double {
         require(rows == cols)
 
+        if (rows == 2) return this[0,0]*this[1,1] - this[0,1]*this[1,0]
+
         var det = 0.0
         for (j in 0 until cols) {
             var incValue = 1.0
@@ -88,7 +90,7 @@ data class Matrix(private var value: Array<DoubleArray>) {
         return result
     }
 
-    fun clone(): Matrix {
+    private fun clone(): Matrix {
         val value = Array(rows) { row ->
             DoubleArray(cols) { col -> this[row, col] }
         }
