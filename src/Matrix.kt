@@ -9,7 +9,14 @@ data class Matrix(private var value: Array<DoubleArray>) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        return value.contentDeepEquals((other as Matrix).value)
+        other as Matrix
+        if (rows != other.rows || cols != other.cols) return false
+        for (r in 0 until rows) {
+            for (c in 0 until cols) {
+                if (!this[r,c].equalsDelta(other[r,c])) return false
+            }
+        }
+        return true
     }
 
     override fun hashCode(): Int {
