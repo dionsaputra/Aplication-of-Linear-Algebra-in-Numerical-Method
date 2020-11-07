@@ -1,42 +1,28 @@
-data class Matrix<T : Number>(private val value: Array<Array<T>>) {
+data class Matrix(private val value: Array<DoubleArray>) {
 
-    /**
-     * Size of columns
-     */
-    val width: Int get() = if (value.isEmpty()) 0 else value.first().size
-
-    /**
-     * Size of rows
-     */
-    val height: Int get() = value.size
-
-    /**
-     * Matrix result = this + other
-     */
-    @Suppress("UNCHECKED_CAST")
-    operator fun plus(other: Matrix<T>): Matrix<T> {
-        if (width != other.width || height != other.height) {
-            throw InvalidOperation("Operand matrix have different dimension")
-        } else {
-            val resultValue = value.copyOf()
-            for (i in other.value.indices) {
-                for (j in other.value[i].indices) {
-                    resultValue[i][j] = (resultValue[i][j] + other.value[i][j]) as T
-                }
-            }
-            return Matrix(resultValue)
-        }
-    }
-
-    override fun toString() = value.contentDeepToString()
+    private val width get() = if (value.isEmpty()) 0 else value[0].size
+    private val height get() = value.size
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        return value.contentDeepEquals((other as Matrix<*>).value)
+        return value.contentDeepEquals((other as Matrix).value)
     }
 
     override fun hashCode(): Int {
         return value.contentDeepHashCode()
+    }
+
+    fun elementWise(other: Matrix, transform: Double.(Double) -> Double): Matrix {
+        require(width == other.width && height == other.height)
+        val result = Array(height) { DoubleArray(width) }
+        for (i in 0 until height) {
+            for (j in 0 until width) result[i][j] = value[i][j].transform(other.value[i][j])
+        }
+        return Matrix(result)
+    }
+
+    companion object {
+        fun of(vararg doubleArray: DoubleArray) = Matrix(doubleArray.asList().toTypedArray())
     }
 }

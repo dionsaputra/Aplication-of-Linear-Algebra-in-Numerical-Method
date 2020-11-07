@@ -1,35 +1,29 @@
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import kotlin.test.assertEquals
 
-class MatrixTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+internal class MatrixTest {
+
+    private lateinit var matrix: Matrix
+
+    @BeforeAll
+    fun setupAll() {
+        matrix = Matrix.of(doubleArrayOf(1.0, 2.0, 3.0))
+    }
 
     @Test
-    fun testPlus_differentWidth_expectInvalidOperation() {
-        val matrixA = Matrix(arrayOf(arrayOf(1, 2), arrayOf(1, 2)))
-        val matrixB = Matrix(arrayOf(arrayOf(1, 2, 3), arrayOf(1, 2, 3)))
-
+    fun test_elementWise_DifferentDimension_expectIllegalArgumentException() {
         try {
-            matrixA + matrixB
+            matrix.elementWise(Matrix.of(doubleArrayOf(1.0, 2.0)), Double::plus)
         } catch (e: Exception) {
-            assert(e is InvalidOperation)
+            assert(e is IllegalArgumentException)
         }
     }
 
     @Test
-    fun testPlus_differentHeight_expectInvalidOperation() {
-        val matrixA = Matrix(arrayOf(arrayOf(1, 2)))
-        val matrixB = Matrix(arrayOf(arrayOf(1, 2), arrayOf(1, 2)))
-        try {
-            matrixA + matrixB
-        } catch (e: Exception) {
-            assert(e is InvalidOperation)
-        }
-    }
-
-    @Test
-    fun testPlus_matchDimension_expectValidResult() {
-        val matrixA = Matrix(arrayOf(arrayOf(1,2,3)))
-        val matrixB = Matrix(arrayOf(arrayOf(4,5,6)))
-        assertEquals(Matrix(arrayOf(arrayOf(5,7,9))), matrixA + matrixB)
+    fun test_elementWise_matchDimension_expectValidResult() {
+        assertEquals(Matrix.of(doubleArrayOf(2.0, 4.0, 6.0)), matrix.elementWise(matrix, Double::plus))
     }
 }
