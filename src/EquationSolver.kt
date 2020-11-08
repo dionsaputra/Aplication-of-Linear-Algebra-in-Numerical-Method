@@ -1,36 +1,41 @@
-class EquationSolver {
+object EquationSolver {
 
     /**
      * compute determinant of a matrix
      */
-    fun det(matrix: Matrix): Double {
+    @Suppress("UNCHECKED_CAST")
+    fun <T : Number> det(matrix: Matrix<T>): T {
         require(matrix.rows == matrix.cols)
 
         if (matrix.rows == 1) return matrix[0, 0]
-        if (matrix.rows == 2) return matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0]
+        if (matrix.rows == 2) return (matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0]) as T
 
         var det = 0.0
         for (c in 0 until matrix.cols) {
             var incValue = 1.0
             var decValue = 1.0
             for (r in 0 until matrix.rows) {
-                incValue *= matrix[r, (c + r) % matrix.cols]
-                decValue *= matrix[matrix.rows - r - 1, (c + r) % matrix.cols]
+                incValue *= matrix[r, (c + r) % matrix.cols].toDouble()
+                decValue *= matrix[matrix.rows - r - 1, (c + r) % matrix.cols].toDouble()
             }
             det += (incValue - decValue)
         }
-        return det
+        return det as T
     }
 
     /**
      * get inverse of a matrix
      */
-    fun inverse(matrix: Matrix): Matrix? {
+    fun <T : Number> inverse(matrix: Matrix<T>): Matrix<Double>? {
         require(matrix.rows == matrix.cols)
         if (det(matrix).equalsDelta(0.0)) return null
 
-        val inverse = Matrix.identity(matrix.rows)
-        val temp = matrix.clone()
+        val inverse = Matrix.diagonal(matrix.rows, 1.0, 0.0)
+        val temp: Matrix<Double> = Matrix(matrix.rows, matrix.cols, matrix.elements.map { it.toDouble() }.toTypedArray())
+        for (r in 0 until matrix.rows) {
+            for (c in 0 until matrix.cols) temp[r, c] = matrix[r, c].toDouble()
+        }
+
         for (fdRow in 0 until matrix.rows) {
             // find focus-diagonal element (first non-zero element in i-th row)
             var fdCol = 0
@@ -63,7 +68,7 @@ class EquationSolver {
     /**
      * solve matrix equation AX = B
      */
-    fun solve(lhsMatrix: Matrix, rhsMatrix: Matrix): Matrix? {
+    fun <T : Number> solve(lhsMatrix: Matrix<T>, rhsMatrix: Matrix<T>): Matrix<Double>? {
         return inverse(lhsMatrix)?.let { it x rhsMatrix }
     }
 }
