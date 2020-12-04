@@ -1,7 +1,6 @@
-# matrix-equation-solver
+# matrix-algeo
+Matrix & it's implementation in solving linear algebra problems.
 
-Solve matrix equation AX = B by matrix inverse approach.
-
-Reference:
-- https://www.shelovesmath.com/algebra/advanced-algebra/matrices-and-solving-systems-with-matrices/
-- https://integratedmlai.com/matrixinverse/
+## Feature:
+- Equation Solver: solve matrix equation AX = B by matrix inverse approach
+- Transformer: linear transformation of 2D vector
